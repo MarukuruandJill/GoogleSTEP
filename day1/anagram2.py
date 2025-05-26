@@ -5,7 +5,6 @@ def anagram2_solution(random_word, dictionary):
     for char in random_word:
         random_word_map[char] += 1
         
-    # res = []
     res = ""
     max_score = 0
     for word in dictionary:
