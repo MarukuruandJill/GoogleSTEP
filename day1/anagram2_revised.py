@@ -12,8 +12,8 @@ def anagram2_solution(random_word, dictionary):
     for dic in dictionary:
         is_valid = True
         for key in dic[0].keys():
-            print("dic[0][key]", dic[0][key])
-            print("random_word_map.get(key, 0)", random_word_map.get(key, 0))
+            # print("dic[0][key]", dic[0][key])
+            # print("random_word_map.get(key, 0)", random_word_map.get(key, 0))
             if int(dic[0][key]) > random_word_map.get(key, 0):
                 is_valid = False
                 break
@@ -61,38 +61,39 @@ def main():
         dictionary = f.readlines()
         for i in range(len(dictionary)):
             dictionary[i] = dictionary[i].replace('\n', '')
+    new_dictionay = create_new_dictionary(dictionary)
     
-    with open("../day1/small.txt") as f:
-        words = f.readlines()
-        for i in range(len(words)):
-            words[i] = words[i].replace('\n', '')
+    # with open("../day1/small.txt") as f:
+    #     words = f.readlines()
+    #     for i in range(len(words)):
+    #         words[i] = words[i].replace('\n', '')
     
     # with open("../day1/medium.txt") as f:
     #     words = f.readlines()
     #     for i in range(len(words)):
     #         words[i] = words[i].replace('\n', '')
     
-    # with open("../day1/large.txt") as f:
-    #     words = f.readlines()
-    #     for i in range(len(words)):
-    #         words[i] = words[i].replace('\n', '')
+    with open("../day1/large.txt") as f:
+        words = f.readlines()
+        for i in range(len(words)):
+            words[i] = words[i].replace('\n', '')
     
-    new_dictionay = create_new_dictionary(dictionary)
     # print(new_dictionay[:10])
-    with open("../day1/small_revised_answer.txt", "w") as f:
-        for word in words:
-            answer = anagram2_solution(word, new_dictionay)
-            f.write(answer + "\n")  
-    
-    # with open("../day1/medium_answer.txt", "w") as f:
-    #     for word in words:
-    #         answer = anagram2_solution(word, dictionary)
-    #         f.write(answer + "\n")  
-    # new_dictionay = create_new_dictionary(dictionary)
-    # with open("../day1/large_revised_answer.txt", "w") as f:
+    # with open("../day1/small_revised_answer.txt", "w") as f:
     #     for word in words:
     #         answer = anagram2_solution(word, new_dictionay)
     #         f.write(answer + "\n")  
+    
+    # with open("../day1/medium_revised_answer.txt", "w") as f:
+    #     for word in words:
+    #         answer = anagram2_solution(word, new_dictionay)
+    #         f.write(answer + "\n")  
+            
+    new_dictionay = create_new_dictionary(dictionary)
+    with open("../day1/large_revised_answer.txt", "w") as f:
+        for word in words:
+            answer = anagram2_solution(word, new_dictionay)
+            f.write(answer + "\n")  
             
 if __name__ == "__main__":
     main()
