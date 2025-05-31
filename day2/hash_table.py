@@ -154,7 +154,7 @@ class HashTable:
     #rehash the hash table  with a new bucket_size
     """
     steps
-    1. Retrieve all the items form self.bucket
+    1. Retrieve all the items from self.bucket
     2. Create the new list with new bucket size
     3. Recalculate the bucket index for each item and insert it into the new buckets
     """
