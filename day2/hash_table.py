@@ -1,4 +1,5 @@
 import random, sys, time
+from sympy import sieve
 
 ###########################################################################
 #                                                                         #
@@ -13,12 +14,14 @@ import random, sys, time
 #
 # |key|: string
 # Return value: a hash value
+prime_numbers = [i for i in sieve.primerange(1, 100000000)]
 def calculate_hash(key):
     assert type(key) == str
     # Note: This is not a good hash function. Do you see why?
+    # my answer: if the key is the anagram, hash will easily conflict.
     hash = 0
-    for i in key:
-        hash += ord(i)
+    for index, i in enumerate(key):
+        hash += ord(i)*prime_numbers[index]
     return hash
 
 
@@ -72,6 +75,10 @@ class HashTable:
         new_item = Item(key, value, self.buckets[bucket_index])
         self.buckets[bucket_index] = new_item
         self.item_count += 1
+        
+        # Rehash if the number of elements exceeds 70% of the table size, double the table size and plus one.
+        if (self.item_count / self.bucket_size) > 0.7:
+            self.rehash(self.bucket_size * 2 + 1)
         return True
 
     # Get an item from the hash table.
@@ -119,14 +126,53 @@ class HashTable:
             else:
                 previous_item = current_item
                 current_item = current_item.next
-                
+        
+        if (self.item_count / self.bucket_size) < 0.3:
+            self.rehash(self.bucket_size // 2 + 1)
+            
         return False
         pass
 
     # Return the total number of items in the hash table.
     def size(self):
         return self.item_count
-
+    
+    
+    # When rehashing, get all the items from self.buckets
+    # returns the list of tuples (key, value)
+    def get_all_item(self):
+        buckets = self.buckets
+        items = []
+        for i in range(self.bucket_size):
+            current_bucket = buckets[i]
+            while current_bucket:
+                item = (current_bucket.key, current_bucket.value)
+                items.append(item)
+                current_bucket = current_bucket.next
+        return items
+    
+    #rehash the hash table  with a new bucket_size
+    """
+    steps
+    1. Retrieve all the items form self.bucket
+    2. Create the new list with new bucket size
+    3. Recalculate the bucket index for each item and insert it into the new buckets
+    """
+    def rehash(self, bucket_size):
+        items = self.get_all_item()
+        self.bucket_size = bucket_size
+        new_buckets = [None] * self.bucket_size
+        for item in items:
+            bucket_index = calculate_hash(item[0]) % self.bucket_size
+            item_in_bucket_index = new_buckets[bucket_index]
+            while item_in_bucket_index:
+                if item_in_bucket_index.key == item[0]:
+                    item_in_bucket_index.value = item[1]
+                item_in_bucket_index = item_in_bucket_index.next
+            new_item = Item(item[0], item[1], new_buckets[bucket_index])
+            new_buckets[bucket_index] = new_item
+        self.buckets = new_buckets
+            
     # Check that the hash table has a "reasonable" bucket size.
     # The bucket size is judged "reasonable" if it is smaller than 100 or
     # the buckets are 30% or more used.
@@ -199,7 +245,6 @@ def functional_test():
     assert hash_table.delete("bca") == True
     assert hash_table.delete("acb") == True
     assert hash_table.delete("cab") == True
-    print(hash_table.size())
     assert hash_table.size() == 0
     print("Functional tests passed!")
 
@@ -230,6 +275,8 @@ def performance_test():
 
     for iteration in range(100):
         random.seed(iteration)
+        if iteration % 5 == 0:
+            print(iteration)
         for i in range(10000):
             rand = random.randint(0, 100000000)
             hash_table.delete(str(rand))
