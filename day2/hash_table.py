@@ -15,13 +15,23 @@ from sympy import sieve
 # |key|: string
 # Return value: a hash value
 prime_numbers = [i for i in sieve.primerange(1, 100000000)]
-def calculate_hash(key):
+def calculate_hash_with_prime_number(key):
     assert type(key) == str
     # Note: This is not a good hash function. Do you see why?
     # my answer: if the key is the anagram, hash will easily conflict.
     hash = 0
     for index, i in enumerate(key):
         hash += ord(i)*prime_numbers[index]
+    return hash
+
+def calculate_hash_with_middle_4_digits(key):
+    key_multiplication = 1
+    for k in key:
+        key_multiplication *= ord(k)
+    key_multiplication = key_multiplication ** 2
+    str_key_multiplication = str(key_multiplication)
+    str_hash = str_key_multiplication[(len(str_key_multiplication)//2)-2:(len(str_key_multiplication)//2) + 2]
+    hash = int(str_hash)
     return hash
 
 
@@ -65,7 +75,7 @@ class HashTable:
     def put(self, key, value):
         assert type(key) == str
         self.check_size() # Note: Don't remove this code.
-        bucket_index = calculate_hash(key) % self.bucket_size
+        bucket_index = calculate_hash_with_middle_4_digits(key) % self.bucket_size
         item = self.buckets[bucket_index]
         while item:
             if item.key == key:
@@ -89,7 +99,7 @@ class HashTable:
     def get(self, key):
         assert type(key) == str
         self.check_size() # Note: Don't remove this code.
-        bucket_index = calculate_hash(key) % self.bucket_size
+        bucket_index = calculate_hash_with_middle_4_digits(key) % self.bucket_size
         item = self.buckets[bucket_index]
         while item:
             if item.key == key:
@@ -104,7 +114,7 @@ class HashTable:
     #               otherwise.
     def delete(self, key):
         assert type(key) == str
-        bucket_index = calculate_hash(key) % self.bucket_size
+        bucket_index = calculate_hash_with_middle_4_digits(key) % self.bucket_size
         item = self.buckets[bucket_index]
         
         #最初にキーがある時
@@ -163,7 +173,7 @@ class HashTable:
         self.bucket_size = bucket_size
         new_buckets = [None] * self.bucket_size
         for item in items:
-            bucket_index = calculate_hash(item[0]) % self.bucket_size
+            bucket_index = calculate_hash_with_middle_4_digits(item[0]) % self.bucket_size
             item_in_bucket_index = new_buckets[bucket_index]
             while item_in_bucket_index:
                 if item_in_bucket_index.key == item[0]:
