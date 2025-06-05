@@ -89,7 +89,7 @@ class Cache:
     
     def check_cache_size(self):
         url_list = self.url_list
-        if self.cache_size > self.max_cache_size: #check_cacheサイズでまとめる
+        if self.cache_size > self.max_cache_size:
             self.hash_table.delete(url_list.tail.url)
             url_list.delete_node(url_list.tail)
             self.cache_size -= 1
