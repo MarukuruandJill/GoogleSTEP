@@ -34,6 +34,13 @@ def calculate_hash_with_middle_4_digits(key):
     hash = int(str_hash)
     return hash
 
+def rolling_hash(key):
+    key_length = len(key)
+    hash = 0
+    for i, k in enumerate(key):
+        hash += ord(k)*(26 ** (key_length-i-1))   
+    return hash
+
 
 # An item object that represents one key - value pair in the hash table.
 class Item:
@@ -75,7 +82,7 @@ class HashTable:
     def put(self, key, value):
         assert type(key) == str
         self.check_size() # Note: Don't remove this code.
-        bucket_index = calculate_hash_with_middle_4_digits(key) % self.bucket_size
+        bucket_index = rolling_hash(key) % self.bucket_size
         item = self.buckets[bucket_index]
         while item:
             if item.key == key:
@@ -87,8 +94,7 @@ class HashTable:
         self.item_count += 1
         
         # Rehash if the number of elements exceeds 70% of the table size, double the table size and plus one.
-        if (self.item_count / self.bucket_size) > 0.7:
-            self.rehash(self.bucket_size * 2 + 1)
+        self.check_bucket_size()
         return True
 
     # Get an item from the hash table.
@@ -99,7 +105,7 @@ class HashTable:
     def get(self, key):
         assert type(key) == str
         self.check_size() # Note: Don't remove this code.
-        bucket_index = calculate_hash_with_middle_4_digits(key) % self.bucket_size
+        bucket_index = rolling_hash(key) % self.bucket_size
         item = self.buckets[bucket_index]
         while item:
             if item.key == key:
@@ -114,16 +120,14 @@ class HashTable:
     #               otherwise.
     def delete(self, key):
         assert type(key) == str
-        bucket_index = calculate_hash_with_middle_4_digits(key) % self.bucket_size
-        item = self.buckets[bucket_index]
+        bucket_index = rolling_hash(key) % self.bucket_size
         
         #最初にキーがある時
-        current_item = item
+        current_item = self.buckets[bucket_index]
         if current_item and current_item.key == key:
-            item = current_item.next
+            self.buckets[bucket_index] = current_item.next
             current_item.key, current_item.value, current_item.next = None, None, None
             self.item_count -= 1
-            self.buckets[bucket_index] = item #この行がないとうまく削除されない なぜ？
             return True
         
         previous_item = None
@@ -137,9 +141,7 @@ class HashTable:
                 previous_item = current_item
                 current_item = current_item.next
         
-        if (self.item_count / self.bucket_size) < 0.3:
-            self.rehash(self.bucket_size // 2 + 1)
-            
+        self.check_bucket_size()
         return False
         pass
 
@@ -173,15 +175,19 @@ class HashTable:
         self.bucket_size = bucket_size
         new_buckets = [None] * self.bucket_size
         for item in items:
-            bucket_index = calculate_hash_with_middle_4_digits(item[0]) % self.bucket_size
+            bucket_index = rolling_hash(item[0]) % self.bucket_size
             item_in_bucket_index = new_buckets[bucket_index]
             while item_in_bucket_index:
-                if item_in_bucket_index.key == item[0]:
-                    item_in_bucket_index.value = item[1]
                 item_in_bucket_index = item_in_bucket_index.next
             new_item = Item(item[0], item[1], new_buckets[bucket_index])
             new_buckets[bucket_index] = new_item
         self.buckets = new_buckets
+        
+    def check_bucket_size(self):
+        if (self.item_count / self.bucket_size) > 0.7:
+            self.rehash(self.bucket_size * 2 + 1)
+        if (self.item_count / self.bucket_size) < 0.3:
+            self.rehash(self.bucket_size // 2 + 1)
             
     # Check that the hash table has a "reasonable" bucket size.
     # The bucket size is judged "reasonable" if it is smaller than 100 or

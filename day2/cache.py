@@ -82,13 +82,17 @@ class Cache:
             url_list.add_node_to_front(Node(url))
             self.hash_table.put(url, contents)
             self.cache_size += 1
-            if self.cache_size > self.max_cache_size:
-                self.hash_table.delete(url_list.tail.url)
-                url_list.delete_node(url_list.tail)
-                self.cache_size -= 1
+            self.check_cache_size()
         else:
             url_list.move_to_front(searched_node)
         pass
+    
+    def check_cache_size(self):
+        url_list = self.url_list
+        if self.cache_size > self.max_cache_size: #check_cacheサイズでまとめる
+            self.hash_table.delete(url_list.tail.url)
+            url_list.delete_node(url_list.tail)
+            self.cache_size -= 1
 
     # Return the URLs stored in the cache. The URLs are ordered in the order
     # in which the URLs are mostly recently accessed.
