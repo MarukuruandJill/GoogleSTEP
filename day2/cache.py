@@ -40,18 +40,17 @@ class DoublyLinkedList:
     
     # delete node from the doubly linked list
     def delete_node(self, node):
-        if node:
-            if node.prev and node.next:
-                node.prev.next = node.next
-                node.next.prev = node.prev
-            elif node.next:
-                self.head = node.next
-                self.head.prev = None
-            elif node.prev:
-                self.tail = node.prev
-                self.tail.next = None
-            else:
-                self.head = self.tail = None
+        if node.prev and node.next:
+            node.prev.next = node.next
+            node.next.prev = node.prev
+        elif node.next:
+            self.head = node.next
+            self.head.prev = None
+        elif node.prev:
+            self.tail = node.prev
+            self.tail.next = None
+        else:
+            self.head = self.tail = None
     
     # move the node to the front
     def move_to_front(self, node):
