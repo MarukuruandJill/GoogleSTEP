@@ -83,7 +83,7 @@ def tokenize(line):
         tokens.append(token)
     return tokens
 
-
+# evaluate only multiply and divide
 def evaluate_multiply_and_divide(tokens):
     index = 0
     tmp_tokens = []
@@ -103,6 +103,7 @@ def evaluate_multiply_and_divide(tokens):
             index += 1
     return tmp_tokens
 
+# evaluate only plus and minus
 def evaluate_plus_and_minus(tokens):
     answer = 0
     tokens.insert(0, {'type': 'PLUS'}) # Insert a dummy '+' token
@@ -117,6 +118,7 @@ def evaluate_plus_and_minus(tokens):
         index += 1
     return answer
 
+# evaluate inside the parentheses
 def evaluate_parentheses(tokens):
     index = 0
     inside_parentheses = []
@@ -140,6 +142,7 @@ def evaluate_parentheses(tokens):
             index += 1   
     return tokens
 
+# evaluate abs, int, and round function
 def evaluate_abs_int_round(tokens):
     index = 0
     while index < len(tokens):
@@ -154,6 +157,7 @@ def evaluate_abs_int_round(tokens):
             tokens[index:index+2] = [{'type': 'NUMBER', 'number': result}]
         index += 1
     return tokens
+
 
 def evaluate(tokens):
     tmp_tokens = evaluate_parentheses(tokens)
