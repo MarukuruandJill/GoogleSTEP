@@ -40,6 +40,10 @@
 - 4/2/2+5+6*3/2
 - 3+6/3*2-4
 - 5.6*3.2*5+46-67+56/4/4
+- (3.0+4*(2-1))/5
+- 12+abs(int(round(-1.55)+abs(int(-2.3+4))))
+- (3*4/2)+5*6+8/4
+- abs(234*54-67-78/3)*int(67/8*2)+round(34/5*4-3)
 
 
 # homework3: 括弧に対応しよう
@@ -66,6 +70,16 @@
 4. 'CLOSING_PARENTHESES'が見つかったら、inside_parenthesesの内容をevaluate functionで計算し、その部分を'NUMBER'型で値をinside_parenthesesの計算結果とするtokenで置き換える。
 5. 'OPENING_PARENTHESES'が見つかったら、inside_parentheses = []にして、3に戻る
 6. 全ての()について計算したら、tokensを返す
+
+### evaluate_parentheses2 functionについて
+- ()内の式を先に計算するための関数
+
+1. index = 0とし、tokensを左から順に見ていく
+2. 'CLOSING_PARENTHESES'が見つかったら、その位置をclosing_indexに保存する
+3. 'OPENING_PARENTHESES'が見つかるまで、indexをマイナス1しながら、tmp_tokensにtokenを先頭に追加していく
+4. 'OPENING_PARENTHESES'が見つかったら、tmp_tokensをevaluateして、計算した部分を、計算結果のtokenで置き換える
+5. indexをプラス1して、2に戻る
+6. tokensを最後まで走査したら、()部分が計算されて置き換わったtokensを返す
 
 ### evaluate functionについて
 - homework2で作ったevaluate functionの最初に、evaluate_parentheses functionを追加するだけ
