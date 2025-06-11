@@ -142,6 +142,25 @@ def evaluate_parentheses(tokens):
             index += 1   
     return tokens
 
+# evaluate inside the parentheses
+def evaluate_parentheses2(tokens):
+    index = 0
+    tmp_tokens = []
+    while index < len(tokens):
+        if tokens[index]['type'] == 'CLOSING_PARENTHESES':
+            closing_index = index
+            index -= 1
+            while tokens[index]['type'] != 'OPENING_PARENTHESES':
+                tmp_tokens.insert(0, tokens[index])
+                index -= 1
+            if tokens[index]['type'] == 'OPENING_PARENTHESES':
+                result = evaluate(tmp_tokens)
+                tokens[index:closing_index+1] = [{'type': 'NUMBER', 'number': result}]
+                tmp_tokens = []
+        index += 1
+                
+    return tokens
+
 # evaluate abs, int, and round function
 def evaluate_abs_int_round(tokens):
     index = 0
@@ -160,7 +179,7 @@ def evaluate_abs_int_round(tokens):
 
 
 def evaluate(tokens):
-    tmp_tokens = evaluate_parentheses(tokens)
+    tmp_tokens = evaluate_parentheses2(tokens)
     tmp_tokens = evaluate_abs_int_round(tmp_tokens)
     tmp_tokens = evaluate_multiply_and_divide(tmp_tokens)
     answer = evaluate_plus_and_minus(tmp_tokens)        
@@ -190,8 +209,9 @@ def run_test():
     test("3+6/3*2-4")
     test("5.6*3.2*5+46-67+56/4/4")
     test("(3.0+4*(2-1))/5")
-    test("(3+5+(4+5)/3*5)*2+4")
     test("12+abs(int(round(-1.55)+abs(int(-2.3+4))))")
+    test("(3*4/2)+5*6+8/4")
+    test("abs(234*54-67-78/3)*int(67/8*2)+round(34/5*4-3)")
     print("==== Test finished! ====\n")
 
 run_test()
